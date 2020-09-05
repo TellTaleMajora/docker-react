@@ -3,8 +3,23 @@ sudo: required
 services:
   - docker
  
+# builds the inital image
 before_install:
   - docker build -t telltalemajora/docker-react -f Dockerfile.dev .
  
+# runs some basic test that are defined within the code
 script:
   - docker run -e CI=true telltalemajora/docker-react npm run test
+
+# deploys the container to aws elasticbeanstalk
+deploy:
+  provider: elasticbeanstalk
+  region: "us-east-2"
+  app: "docker-react"
+  env: "DockerReact-env"
+  bucket_name: elasticbeanstalk-us-east-2-899240869859
+  bucket_path: "docker-react"
+  on:
+    branch: master
+  access_key_id: $AWS_ACCESS_KEY
+  secret_access_key: $AWS_SECRET_KEY
